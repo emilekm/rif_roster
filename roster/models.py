@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Player(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     squads = models.ManyToManyField('Squad', through='SquadRole')
 
     def __str__(self):
