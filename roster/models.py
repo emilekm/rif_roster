@@ -15,6 +15,8 @@ class Player(models.Model):
 class Squad(models.Model):
     order = models.IntegerField()
     name = models.CharField(max_length=255)
+    short = models.CharField(max_length=3)
+
     players = models.ManyToManyField(Player, through='SquadRole')
 
     def __str__(self):
@@ -24,20 +26,34 @@ class Squad(models.Model):
         ordering = ['order',]
 
 class SquadRole(models.Model):
-    CO = 0
-    HCO = 1
-    SL = 2
-    NCO = 3
-    GRUNT = 4
-    RESERVE = 5
+    SCO = 0
+    CO = 1
+    XO = 2
+    HCO = 3
+    SL = 4
+    NCO = 5
+    GRUNT = 6
+    RESERVE = 7
     ROLES = (
-        (CO, 'Commander'),
-        (HCO, 'Officer'),
-        (SL, 'Squad Leader'),
+        (SCO, 'SCO'),
+        (CO, 'CO'),
+        (XO, 'XO'),
+        (HCO, 'HCO'),
+        (SL, 'SL'),
         (NCO, 'NCO'),
         (GRUNT, 'Grunt'),
         (RESERVE, 'Reserve'),
     )
+    # ROLES = (
+    #     (SCO, 'Supreme Commander'),
+    #     (CO, 'Commander'),
+        # (XO, 'Executive Commander'),
+    #     (HCO, 'Officer'),
+    #     (SL, 'Squad Leader'),
+    #     (NCO, 'NCO'),
+    #     (GRUNT, 'Grunt'),
+    #     (RESERVE, 'Reserve'),
+    # )
     role = models.IntegerField(choices=ROLES, default=RESERVE)
     assigned_at = models.DateTimeField(auto_now_add=True)
 
