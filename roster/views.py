@@ -1,3 +1,9 @@
+from django.views.generic.list import ListView
 from django.shortcuts import render
 
-# Create your views here.
+from roster.models import Squad
+
+
+class SquadListView(ListView):
+    model = Squad
+
