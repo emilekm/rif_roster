@@ -1,31 +1,37 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <div class="container">
-    <table class="table table-dark">
-    {% for squad in object_list %}
-    {% with roles=squad.squadrole_set.all %}
-        <thead class="thead-light">
+    <table class="table">
+    {% for squad, ranks in squads %}
+        {% with roles=squad.squadrole_set.all %}
+        <thead id="squad-{{ squad.id }}" class="thead-light">
             <tr>
                 <th>{{ squad.short }}</th>
                 <th>{{ squad.name }}</th>
-                <th>{{ roles|length }} player{{ roles|length|pluralize }}</th>
+                <th class="text-right">{{ roles|length }} player{{ roles|length|pluralize }}</th>
             </tr>
         </thead>
+        {% endwith %}
         <tbody>
-        {% for role in roles %}
+        {% for rank, roles in ranks %}
+            {% for role in roles %}
             <tr>
-                <td>{{ role.get_role_display }}</td>
-                <td>{{ role.player.name }}</td>
+                {% if forloop.first %}
+                <td rowspan="{{ roles|length }}">{{ rank }}</td>
+                {% endif %}
+                <td class="">
+                    {{ role.player }}
+                </td>
                 <td>
                 {% for second_role in role.player.squadrole_set.all %}
                 {% if second_role != role %}
-                    <span class="badge badge-info">{{ second_role.squad.short }}</span>
+                    <a href="#squad-{{ second_role.squad.id }}" class="btn btn-outline-info btn-sm float-right">{{ second_role.squad.short }}</a>
                 {% endif %}
                 {% endfor %}
                 </td>
             </tr>
+            {% endfor %}
         {% endfor %}
         </tbody>
-    {% endwith %}
     {% endfor %}
     </table>
 </div>
