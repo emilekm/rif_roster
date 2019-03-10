@@ -1,11 +1,17 @@
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
+from django.contrib.admin.models import LogEntry
 
 from roster.models import Player, Squad, SquadRole
 
 
 link = '<a href="{}">{}</a>'
+
+
+@admin.register(LogEntry)
+class LogEntryAdmin(admin.ModelAdmin):
+    readonly_fields = [f.name for f in LogEntry._meta.get_fields()]
 
 
 class SquadRoleInline(admin.TabularInline):
