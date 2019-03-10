@@ -1,4 +1,7 @@
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <div class="container">
     <table class="table">
     {% for squad, ranks in squads %}
@@ -18,13 +21,13 @@
                 {% if forloop.first %}
                 <td rowspan="{{ roles|length }}">{{ rank }}</td>
                 {% endif %}
-                <td class="">
+                <td class="align-middle">
                     {{ role.player }}
                 </td>
-                <td>
+                <td class="text-right">
                 {% for second_role in role.player.squadrole_set.all %}
                 {% if second_role != role %}
-                    <a href="#squad-{{ second_role.squad.id }}" class="btn btn-outline-info btn-sm float-right">{{ second_role.squad.short }}</a>
+                <a href="#squad-{{ second_role.squad.id }}" class="btn btn-outline-info btn-sm" data-toggle="tooltip" data-placement="top" title="{{ second_role.get_role_display }} of {{ second_role.squad.name }}">{{ second_role.squad.short }}</a>
                 {% endif %}
                 {% endfor %}
                 </td>
