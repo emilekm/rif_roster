@@ -8,7 +8,7 @@
     <table class="table">
     {% for squad, ranks in squads %}
         {% with roles=squad.squadrole_set.all %}
-        <thead id="squad-{{ squad.id }}" class="thead-light">
+        <thead id="squad-{{ squad.order }}" class="thead-light">
             <tr>
                 <th>{{ squad.short }}</th>
                 <th>{{ squad.name }}</th>
@@ -29,7 +29,7 @@
                 <td class="text-right">
                 {% for second_role in role.player.squadrole_set.all %}
                 {% if second_role != role %}
-                <a href="#squad-{{ second_role.squad.id }}" class="btn btn-outline-info btn-sm" data-toggle="tooltip" data-placement="top" title="{{ second_role.get_role_display }} of {{ second_role.squad.name }}">{{ second_role.squad.short }}</a>
+                <a href="#squad-{{ second_role.squad.order }}" class="btn btn-outline-info btn-sm" data-toggle="tooltip" data-placement="top" title="{{ second_role.get_role_display }} of {{ second_role.squad.name }}">{{ second_role.squad.short }}</a>
                 {% endif %}
                 {% endfor %}
                 </td>
