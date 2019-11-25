@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "99c4b9ec1b8891ff787677276760beb6d6d4919c55660da1c713682156a6086c"
+            "sha256": "420b64875a4e3ed7541facbd6b20b45b106f8de86ab24032f40347cea544f6cb"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,10 @@
         ]
     },
     "default": {
+        "contact-roster": {
+            "editable": true,
+            "path": "./src"
+        },
         "django": {
             "hashes": [
                 "sha256:16040e1288c6c9f68c6da2fe75ebde83c0a158f6f5d54f4c5177b0c1478c5b86",

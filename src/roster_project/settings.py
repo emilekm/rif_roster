@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'rif_roster.urls'
+ROOT_URLCONF = 'roster_project.urls'
 
 TEMPLATES = [
     {
@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'rif_roster.wsgi.application'
+WSGI_APPLICATION = 'roster_project.wsgi.application'
 
 
 # Database
