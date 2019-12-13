@@ -7,7 +7,8 @@ verify_ssl = true
 
 [packages]
 django = "*"
-contact_roster = {editable = true, path= "./src"}
+contact_roster = {editable = true,path = "./src"}
+django-guardian = "*"
 
 [requires]
 python_version = "3.8"

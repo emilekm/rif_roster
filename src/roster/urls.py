@@ -1,8 +1,8 @@
 from django.urls import path
 
-from roster.views import SquadListView
+from roster.views import TeamRosterView
 
 
 urlpatterns = [
-    path('', SquadListView.as_view(), name='squad-list-view')
+    path('teams/<int:pk>/', TeamRosterView.as_view(), name='team-roster-view')
 ]

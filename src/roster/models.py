@@ -1,23 +1,22 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 
 
-class Player(models.Model):
-    name = models.CharField(max_length=255, unique=True)
-    squads = models.ManyToManyField('Squad', through='SquadRole')
+class Team(models.Model):
+    group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL)
 
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ['name']
+    name = models.CharField(max_length=120)
+    logo = models.FileField()
 
 
 class Squad(models.Model):
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
     order = models.IntegerField()
     name = models.CharField(max_length=255)
     short = models.CharField(max_length=3)
 
-    players = models.ManyToManyField(Player, through='SquadRole')
+    players = models.ManyToManyField(get_user_model(), through='SquadRole')
 
     def __str__(self):
         return '{}. {}'.format(self.order, self.name)
@@ -44,20 +43,10 @@ class SquadRole(models.Model):
         (GRUNT, 'Grunt'),
         (RESERVE, 'Reserve'),
     )
-    # ROLES = (
-    #     (SCO, 'Supreme Commander'),
-    #     (CO, 'Commander'),
-        # (XO, 'Executive Commander'),
-    #     (HCO, 'Officer'),
-    #     (SL, 'Squad Leader'),
-    #     (NCO, 'NCO'),
-    #     (GRUNT, 'Grunt'),
-    #     (RESERVE, 'Reserve'),
-    # )
     role = models.IntegerField(choices=ROLES, default=RESERVE)
     assigned_at = models.DateTimeField(auto_now_add=True)
 
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    player = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     squad = models.ForeignKey(Squad, on_delete=models.CASCADE)
 
     def __str__(self):

@@ -1,12 +1,9 @@
 from django.contrib import admin
-from django.urls import reverse
-from django.utils.html import format_html
 from django.contrib.admin.models import LogEntry
 
-from roster.models import Player, Squad, SquadRole
+from guardian.admin import GuardedModelAdmin, GuardedModelAdminMixin
 
-
-link = '<a href="{}">{}</a>'
+from roster.models import Tournament, Team, Squad, SquadRole
 
 
 @admin.register(LogEntry)
@@ -14,48 +11,45 @@ class LogEntryAdmin(admin.ModelAdmin):
     readonly_fields = [f.name for f in LogEntry._meta.get_fields()]
 
 
-class SquadRoleInline(admin.TabularInline):
+class SquadRoleInline(admin.TabularInline, GuardedModelAdminMixin):
     model = SquadRole
     extra = 0
 
 
-@admin.register(Player)
-class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'get_squads')
-    inlines = [
-        SquadRoleInline
-    ]
-
-    def get_squads(self, obj):
-        roles = obj.squads.through.objects.filter(player=obj)
-        return format_html(' | '.join([
-            link.format(
-                reverse('admin:roster_squad_change', args=[r.squad.id]),
-                r.get_ranked_squad()
-            )
-            for r in roles
-        ]))
-    get_squads.short_description = 'Squads'
-
-
 @admin.register(Squad)
 class SquadAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'get_players')
     inlines = [
         SquadRoleInline
     ]
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        all_teams = Team.objects.all()
+        user_teams = [
+            team for team in all_teams
+            if request.user.has_perm('tournament.view_team', team)
+        ]
+        return queryset.filter(team__in=user_teams)
 
-    def get_players(self, obj):
-        roles = obj.players.through.objects.filter(squad=obj)
-        return format_html('<br>'.join([
-            link.format(
-                reverse('admin:roster_player_change', args=[r.player.id]),
-                r.get_ranked_player()
-            )
-            for r in roles
-        ]))
-    get_players.short_description = 'Players'
 
-@admin.register(SquadRole)
-class SquadRoleAdmin(admin.ModelAdmin):
-    list_display = ('squad', 'get_role_display', 'player', )
+class TeamInline(admin.TabularInline):
+    model = Team
+    extra = 0
+
+
+@admin.register(Tournament)
+class TournamentAdmin(admin.ModelAdmin):
+    inlines = [
+        TeamInline
+    ]
+
+
+class SquadInline(admin.TabularInline):
+    model = Squad
+    extra = 0
+
+
+@admin.register(Team)
+class TeamAdmin(GuardedModelAdmin):
+    inlines = [
+        SquadInline
+    ]

@@ -11,6 +11,19 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from configparser import RawConfigParser
+
+
+def read_config(section):
+    try:
+        config = RawConfigParser()
+        with open(os.environ["ROSTER_CONFIG"], 'r') as fp:
+            config.read_file(fp)
+        return dict(config.items(section))
+    except KeyError:
+        return {}
+
+CONFIG = read_config("roster")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,9 +36,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '8t7%sce&rl_eij2n3bqn0=o7iyu6g34^mu(_0@^98$m%!p$2!c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+roster_debug_var = CONFIG.get("debug", "false").lower()
+DEBUG = {"true": True, "false": False}[roster_debug_var]
 
-ALLOWED_HOSTS = []
+# comma-separated list of allowed host names
+roster_allowed_hosts_var = CONFIG.get("allowed_hosts", "localhost")
+ALLOWED_HOSTS = roster_allowed_hosts_var.split(",")
 
 
 # Application definition
@@ -37,7 +53,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'roster.apps.RosterConfig'
+    'guardian',
+    'svauth.apps.SVAuthConfig',
+    'roster.apps.RosterConfig',
 ]
 
 MIDDLEWARE = [
@@ -75,11 +93,18 @@ WSGI_APPLICATION = 'roster_project.wsgi.application'
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    "default": {key.upper(): value for key, value in read_config(CONFIG["database"]).items()},
 }
+
+AUTH_PROVIDERS = {
+    provider: read_config(provider)
+    for provider in CONFIG.get('auth_providers', '').split(',')
+    if provider
+}
+
+# Populate `DATABASES` with providers ones
+for name, provider in AUTH_PROVIDERS.items():
+    DATABASES[provider['database']] = {key.upper(): value for key, value in read_config(provider['database']).items()}
 
 
 # Password validation
@@ -99,6 +124,12 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'guardian.backends.ObjectPermissionBackend'
+)
 
 
 # Internationalization
