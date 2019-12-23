@@ -17,8 +17,7 @@ from configparser import RawConfigParser
 
 def read_config(section):
     config = RawConfigParser()
-    with open('../roster.conf') as fp:
-    # with open(os.environ["ROSTER_CONFIG"], 'r') as fp:
+    with open(os.environ["ROSTER_CONFIG"], 'r') as fp:
         config.read_file(fp)
     return dict(config.items(section))
 
