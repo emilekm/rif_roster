@@ -11,17 +11,16 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import logging
 from configparser import RawConfigParser
 
 
 def read_config(section):
-    try:
-        config = RawConfigParser()
-        with open(os.environ["ROSTER_CONFIG"], 'r') as fp:
-            config.read_file(fp)
-        return dict(config.items(section))
-    except KeyError:
-        return {}
+    config = RawConfigParser()
+    with open('../roster.conf') as fp:
+    # with open(os.environ["ROSTER_CONFIG"], 'r') as fp:
+        config.read_file(fp)
+    return dict(config.items(section))
 
 CONFIG = read_config("roster")
 
@@ -94,17 +93,8 @@ WSGI_APPLICATION = 'roster_project.wsgi.application'
 
 DATABASES = {
     "default": {key.upper(): value for key, value in read_config(CONFIG["database"]).items()},
+    "xenforo": {key.upper(): value for key, value in read_config(CONFIG["xf_database"]).items()},
 }
-
-AUTH_PROVIDERS = {
-    provider: read_config(provider)
-    for provider in CONFIG.get('auth_providers', '').split(',')
-    if provider
-}
-
-# Populate `DATABASES` with providers ones
-for name, provider in AUTH_PROVIDERS.items():
-    DATABASES[provider['database']] = {key.upper(): value for key, value in read_config(provider['database']).items()}
 
 
 # Password validation
@@ -127,10 +117,30 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
+    'svauth.backends.LocalAuthBackend',
+    'svauth.backends.XFAuthBackend',
     'guardian.backends.ObjectPermissionBackend'
 )
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'svauth.hashers.XenForoSHA256PasswordHasher',
+    'svauth.hashers.XenForoSHA1PasswordHasher',
+    'svauth.hashers.VBulletinPasswordHasher',
+    'svauth.hashers.XenForoCore12PasswordHasher',
+]
+
+LOGIN_URL = '/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login'
+
+AUTH_USER_MODEL = 'svauth.User'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media/').replace('\\','/')
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

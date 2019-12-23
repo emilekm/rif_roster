@@ -1,13 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
 
 
 class Team(models.Model):
-    group = models.ForeignKey(Group, null=True, on_delete=models.SET_NULL)
-
     name = models.CharField(max_length=120)
     logo = models.FileField()
+    slug = models.SlugField()
 
 
 class Squad(models.Model):
@@ -61,4 +59,3 @@ class SquadRole(models.Model):
     class Meta:
         ordering = ['squad', 'role', 'player']
         unique_together = ('squad', 'player',)
-

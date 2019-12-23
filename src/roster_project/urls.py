@@ -17,8 +17,10 @@ from django.contrib import admin
 from django.urls import include, path
 
 import roster.urls
+import svauth.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(roster.urls))
+    path('', include(svauth.urls)),
+    path('', include(roster.urls)),
 ]
