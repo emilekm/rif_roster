@@ -28,5 +28,19 @@ class SVUserAdmin(UserAdmin):
     )
 
 
+class SVRemoteGroupAdmin(admin.ModelAdmin):
+    list_display = ("remote_id", "local_group")
+    list_filter = ("remote_id", "local_group")
+
+    @staticmethod
+    def remote_id(instance: models.RemoteGroup):
+        return instance.remote_id
+
+    @staticmethod
+    def local_group(instance: models.RemoteGroup):
+        return instance.local_group
+
+
 admin.site.register(models.User, SVUserAdmin)
+admin.site.register(models.RemoteGroup, SVRemoteGroupAdmin)
 admin.site.register(Permission, admin.ModelAdmin)
