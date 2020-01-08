@@ -23,6 +23,9 @@ class SVUserCreationForm(UserCreationForm):
 class SVUserAdmin(UserAdmin):
     form = SVUserChangeForm
     add_form = SVUserCreationForm
+    fieldsets = UserAdmin.fieldsets + (
+        ('svauth', {'fields': ('xf_user_id',)},),
+    )
 
 
 admin.site.register(models.User, SVUserAdmin)
