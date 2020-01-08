@@ -116,8 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 AUTHENTICATION_BACKENDS = (
-    'svauth.backends.LocalAuthBackend',
     'svauth.backends.XFAuthBackend',
+    'svauth.backends.LocalAuthBackend',
     'guardian.backends.ObjectPermissionBackend'
 )
 
