@@ -29,6 +29,8 @@ class HomeView(LoginRequiredMixin, NavbarMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         self.object_list = get_objects_for_user(self.request.user, 'roster.view_team', klass=self.model)
+        if len(self.object_list) < 1:
+            return super().get(request, *args, **kwargs)
         return redirect(reverse('team-roster', kwargs={'slug': self.object_list[0].slug}))
 
 
