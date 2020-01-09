@@ -139,7 +139,7 @@ LOGOUT_REDIRECT_URL = '/login'
 AUTH_USER_MODEL = 'svauth.User'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media/').replace('\\','/')
+MEDIA_ROOT = CONFIG['media_root']
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -159,3 +159,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = CONFIG['static_root']
