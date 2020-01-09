@@ -7,6 +7,9 @@ class Team(models.Model):
     logo = models.FileField()
     slug = models.SlugField()
 
+    def __str__(self):
+        return self.name
+
 
 class Squad(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
