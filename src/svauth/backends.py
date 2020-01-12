@@ -10,7 +10,6 @@ from svauth.utils import dictfetchall, convert_to_django_password
 UserModel = get_user_model()
 
 
-
 class LocalAuthBackend(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username is None:
@@ -70,7 +69,7 @@ class XFAuthBackend(ModelBackend):
             setattr(user, UserModel.USERNAME_FIELD, row['username'])
             user.save()
 
-        self.update_user_groups(user)
+        self.update_perms(user)
 
         if user.check_password(password):
             return user
@@ -90,17 +89,20 @@ class XFAuthBackend(ModelBackend):
                 return None
         return None
 
-    def update_user_groups(self, user):
+    def update_perms(self, user):
         with connections['xenforo'].cursor() as cursor:
             cursor.execute("""SELECT user_group_id
                             FROM xf_user_group_relation
                             WHERE user_id = %s
                         """, [user.xf_user_id])
             remote_group_ids = [row['user_group_id'] for row in dictfetchall(cursor)]
-            print(remote_group_ids)
 
         groups_with_remote = Group.objects.filter(remotegroup__isnull=False)
-
         local_groups = user.groups.exclude(pk__in=groups_with_remote.values_list('pk', flat=True))
-
         user.groups.set(local_groups | groups_with_remote.filter(remotegroup__remote_id__in=remote_group_ids))
+
+        superuser_group_ids = [int(gid) for gid in settings.XF_CONFIG['superuser_group_ids'].split(',')]
+        user.is_superuser = True if [group for group in superuser_group_ids if group in remote_group_ids] else user.is_superuser
+        user.is_staff = user.is_superuser or user.groups.filter(remotegroup__staff=True).exists() or user.is_staff
+
+        user.save()

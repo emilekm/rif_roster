@@ -9,6 +9,7 @@ class User(AbstractUser):
 class RemoteGroup(models.Model):
     remote_id = models.PositiveIntegerField()
     local_group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    staff = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('local_group', 'remote_id')
