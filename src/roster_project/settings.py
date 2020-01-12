@@ -22,6 +22,7 @@ def read_config(section):
     return dict(config.items(section))
 
 CONFIG = read_config("roster")
+XF_CONFIG = read_config("xenforo")
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -92,7 +93,7 @@ WSGI_APPLICATION = 'roster_project.wsgi.application'
 
 DATABASES = {
     "default": {key.upper(): value for key, value in read_config(CONFIG["database"]).items()},
-    "xenforo": {key.upper(): value for key, value in read_config(CONFIG["xf_database"]).items()},
+    "xenforo": {key.upper(): value for key, value in read_config(XF_CONFIG["database"]).items()},
 }
 
 
